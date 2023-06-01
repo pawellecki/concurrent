@@ -32,6 +32,7 @@ export const Task1 = () => {
     <div className="task">
       {isError && <img src={errorImg} alt="error" />}
       <p>Task 1</p>
+      <p>enter a number</p>
       <input
         className={`${isError ? 'isError' : ''}${isErrorAnimation ? ' isErrorAnimation' : ''}`}
         value={value}
