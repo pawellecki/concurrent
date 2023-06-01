@@ -17,6 +17,10 @@ code {
   text-align: center;
 }
 
+.task {
+  margin: 140px;
+}
+
 input {
   border: 1px solid blue;
   outline: none;
@@ -52,4 +56,11 @@ input {
   60% {
     transform: translate3d(4px, 0, 0);
   }
+}
+
+img {
+  position: absolute;
+  top: 0;
+  margin-left: -100px;
+  width: 200px;
 }

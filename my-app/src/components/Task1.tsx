@@ -1,17 +1,20 @@
 import { useState } from 'react';
+import errorImg from '../no.jpg';
 
 export const Task1 = () => {
   const [value, setValue] = useState<number | string>('');
   const [isError, setIsError] = useState(false);
   const [isErrorAnimation, setIsErrorAnimation] = useState(false);
 
-  const updateValue = (value: string) => {
-    if (!value) {
+  const updateValue = (newValue: string) => {
+    const isNumberValue = +newValue;
+
+    if (!value || !newValue || isNumberValue) {
       setIsError(false);
+      setIsErrorAnimation(false);
     }
 
-    setIsErrorAnimation(false);
-    setValue(value);
+    setValue(newValue);
   };
 
   const validate = () => {
@@ -26,7 +29,8 @@ export const Task1 = () => {
   };
 
   return (
-    <div>
+    <div className="task">
+      {isError && <img src={errorImg} alt="error" />}
       <p>Task 1</p>
       <input
         className={`${isError ? 'isError' : ''}${isErrorAnimation ? ' isErrorAnimation' : ''}`}

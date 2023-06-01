@@ -1,20 +1,28 @@
+import { useState } from 'react';
 import { asyncCall, sendConcurrentRequests } from '../helpers/async';
 
+const limit = 3;
+
 export const Task2 = () => {
-  const limit = 3;
+  const [asyncResult, setAsyncResult] = useState<unknown[]>();
 
-  // set valuesNumbers or valuesStrings as values
-  const valuesNumbers = [1, 2, 3, 4, 5, 6];
-  // const valuesStrings = ["aa", "bb", "cc", "dd", "ee"];
+  const valuesNumbers = [501, 502, 503, 504, 505, 997];
+  const valuesStrings = ['aa', 'bb', 'cc', 'dd', 'ee'];
 
-  const values = valuesNumbers;
+  const values = valuesNumbers; //switch between valuesNumbers and valuesStrings to see different results
+
+  const asyncFn = async (values: any, asyncCall: any, limit: any) => {
+    const result = await sendConcurrentRequests(values, asyncCall, limit);
+
+    setAsyncResult(result);
+  };
 
   return (
-    <div>
+    <div className="task">
       <p>Task 2</p>
-      <button onClick={() => sendConcurrentRequests<(typeof values)[0]>(values, asyncCall, limit)}>
-        send requestst
-      </button>
+      <button onClick={() => asyncFn(values, asyncCall, limit)}>send requestst</button>
+      <p>result:</p>
+      <p>{JSON.stringify(asyncResult)}</p>
     </div>
   );
 };

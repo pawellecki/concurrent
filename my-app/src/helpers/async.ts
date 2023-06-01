@@ -1,16 +1,28 @@
 export const testPromiseDelay = 500;
 
-const asyncFn = (delay: number) =>
-    new Promise((resolve) => {
+const asyncWithTimeout = (delay: number) =>
+    new Promise((resolve, reject) => {
         setTimeout(() => {
-            resolve("ok");
+            const isTestingError = delay === 997
+
+            if (isTestingError) {
+                reject(`error delay: ${delay}`)
+            }
+
+            resolve(delay)
         }, delay);
     });
 
 export async function asyncCall<T>(arg: T) {
-    console.log("call " + arg);
+    console.log("call " + arg); //check console to see the order of call/result
 
-    const result = await asyncFn(testPromiseDelay);
+    let result
+
+    try {
+        result = await asyncWithTimeout(arg as any);
+    } catch (error) {
+        result = error
+    }
 
     console.log("result " + arg);
     return result;
@@ -18,41 +30,48 @@ export async function asyncCall<T>(arg: T) {
 
 export function sendConcurrentRequests<T>(
     values: T[],
-    fn: <T>(arg: T) => Promise<unknown>,
+    asyncFn: <T>(arg: T) => Promise<unknown>,
     limit: number
-) {
-    // return new Promise((resolve) => {
-    // Copy arguments to avoid side effect, reverse queue as
-    // pop is faster than shift
-    const argQueue = [...values].reverse();
-    let count = 0;
-    const outs: unknown[] = [];
+): Promise<unknown[]> {
+    return new Promise((resolve) => {
+        // copy arguments to avoid side effect
+        // reverse queue as pop is faster than shift
+        let argQueue = [...values].reverse();
 
-    const poolNext = () => {
-        if (!argQueue.length && !count) {
-            // resolve(outs);
-            return;
-        } else {
-            while (count < limit && argQueue.length) {
-                const index = values.length - argQueue.length;
-                const arg = argQueue.pop();
-                count += 1;
-                const out = fn(arg);
+        // collects results of Promises
+        let outs: unknown[] = [];
 
-                const processOut = (out: unknown, index: number) => {
-                    outs[index] = out;
-                    count -= 1;
-                    poolNext();
-                };
+        let count = 0;
 
-                if (typeof out === "object" && out.then) {
+        const pullNext = () => {
+            const areAllPromisesFinished = !argQueue.length && !count
+
+            if (areAllPromisesFinished) {
+                resolve(outs);
+            } else {
+                while (count < limit && argQueue.length) {
+                    const index = values.length - argQueue.length;
+
+                    //removes element from queue of values
+                    const arg = argQueue.pop();
+
+                    const out = asyncFn(arg);
+
+                    //counts concurrent Promises - 1 to compare with limit
+                    count += 1;
+
+                    const processOut = (out: unknown, index: number) => {
+                        outs[index] = out;
+                        count -= 1;
+
+                        pullNext();
+                    };
+
                     out.then((out: unknown) => processOut(out, index));
-                } else {
-                    processOut(out, index);
                 }
             }
-        }
-    };
-    poolNext();
-    // });
+        };
+
+        pullNext();
+    });
 }
