@@ -1,12 +1,5 @@
 # async function with limit of concurrent Promises + tests
-
-to start:
-- clone repo
-- go to 'my-app' folder
-- 'yarn' to install dependencies
-- 'yarn start' to start
-
-_______________________________________________________________________________________________________
+________________________________________________________________________________________________
 Task 1:
 Create a simple UI in React with a text field (having a blue border) and a submit
 button. If the text field contains a string that is an integer, then the submit button can
@@ -26,3 +19,9 @@ equal to concurrency limit number (3rd argument).
 The function should work for any kind of values in the input array.
 Please write a test suite in a framework of choice that proves the implementation
 works as expected.
+________________________________________________________________________________________________
+to start:
+- clone repo
+- go to 'my-app' folder
+- 'yarn' to install dependencies
+- 'yarn start' to start
